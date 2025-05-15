@@ -1,54 +1,85 @@
-# React + TypeScript + Vite
+# 🌍 Travel Destination Generator (React + AWS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este projeto é uma aplicação React que utiliza serviços da AWS para:
 
-Currently, two official plugins are available:
+- 📧 Autenticação de usuários com e-mail e senha usando **Amazon Cognito** via AWS Amplify  
+- 🧠 Geração de sugestões de destinos de viagem com base nos interesses do usuário usando **Amazon Bedrock** (Claude 3 Sonnet)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 📦 Tecnologias Utilizadas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [React + Vite](https://vitejs.dev/)
+- [AWS Amplify](https://docs.amplify.aws/)
+- [Amazon Cognito](https://aws.amazon.com/cognito/) (autenticação)
+- [Amazon Bedrock](https://aws.amazon.com/bedrock/) (inteligência artificial)
+- [Claude 3 Sonnet](https://docs.aws.amazon.com/bedrock/latest/userguide/model-anthropic-claude.html)
+- TypeScript
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
+---
+
+## 🚀 Como Funciona
+
+### 🔐 Autenticação
+
+A autenticação é feita usando o método `defineAuth()` do Amplify, que internamente configura um **User Pool no Cognito**. Isso cuida automaticamente de:
+
+- Registro de usuários com e-mail e senha  
+- Verificação de e-mail via código  
+- Login autenticado  
+- Tokens e sessões válidas  
+
+O trecho responsável por isso está em:
+
+```ts
+// amplify/auth/resource.ts
+loginWith: {
+  email: {
+    verificationEmailStyle: "CODE",
+    verificationEmailSubject: "Welcome to the Travel Destination App",
+    verificationEmailBody: (createCode) => `Use this code to verify your email: ${createCode()}`,
   },
-})
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🧠 Geração de Destinos com Bedrock
+Quando o usuário seleciona seus interesses (ex: natureza, cultura, praia), a aplicação envia esses dados para uma API customizada criada com o Amplify, que por sua vez invoca o modelo Claude 3 da Bedrock.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+📍 O código que configura essa chamada está em:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+amplify/data/resource.ts → define a função askBedrock()
+
+amplify/bedrock.js → envia a requisição para o modelo
+
+// Exemplo de uso
+askBedrock({ interests: ["nature", "culture"] });
+
+##🛠️ Como Rodar o Projeto
+
+1. Clone o repositório
+
+git clone https://github.com/seu-usuario/travel-ai-app.git
+cd travel-ai-app
+
+2. Instale as dependências
+
+npm install
+
+3. Configure o Amplify
+
+Se for a primeira vez:
+
+npm create amplify@latest -y
+
+Isso cria a estrutura /amplify.
+
+4. Inicialize o backend (AWS)
+
+Se estiver conectando a um projeto já criado:
+
+amplify pull --appId seu_app_id --envName dev
+
+Ou, para criar do zero:
+
+amplify init
+amplify push
