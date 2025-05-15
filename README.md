@@ -42,7 +42,7 @@ loginWith: {
 }
 ```
 
-🧠 Geração de Destinos com Bedrock
+### 🧠 Geração de Destinos com Bedrock
 Quando o usuário seleciona seus interesses (ex: natureza, cultura, praia), a aplicação envia esses dados para uma API customizada criada com o Amplify, que por sua vez invoca o modelo Claude 3 da Bedrock.
 
 📍 O código que configura essa chamada está em:
@@ -51,35 +51,28 @@ amplify/data/resource.ts → define a função askBedrock()
 
 amplify/bedrock.js → envia a requisição para o modelo
 
+```
 // Exemplo de uso
 askBedrock({ interests: ["nature", "culture"] });
+```
 
-##🛠️ Como Rodar o Projeto
+## 🛠️ Como Rodar o Projeto
 
 1. Clone o repositório
 
+```
 git clone https://github.com/seu-usuario/travel-ai-app.git
 cd travel-ai-app
+```
 
 2. Instale as dependências
-
+```
 npm install
-
+```
 3. Configure o Amplify
 
 Se for a primeira vez:
-
+```
 npm create amplify@latest -y
-
+```
 Isso cria a estrutura /amplify.
-
-4. Inicialize o backend (AWS)
-
-Se estiver conectando a um projeto já criado:
-
-amplify pull --appId seu_app_id --envName dev
-
-Ou, para criar do zero:
-
-amplify init
-amplify push
